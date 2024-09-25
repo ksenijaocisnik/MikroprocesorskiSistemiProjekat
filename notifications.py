@@ -34,16 +34,22 @@ def play_alarm_sound():
    pygame.mixer.music.play()
 
 
-# Funkcija za slanje signala na uređaj preko serijskog porta
+# Funkcija za slanje signala na uređaj preko serijskog porta i primanje povratne poruke
 def send_signal_to_device(port):
     try:
         # Port i brzina prenosa podataka, standardno 9600
-        ser = serial.Serial(port, 9600)  
+        # Dodajemo timeout za čitanje
+        ser = serial.Serial(port, 9600, timeout=1)  
         # Saljemo broj 1 kao signal uređaju, u binarnom formatu
         ser.write(b'1')  
+        print(f"Poslat signal na {port}.")
+        # Čitanje povratne poruke sa uređaja i dekodiranje u string
+        response = ser.readline().decode('utf-8').strip()  
+        print(f"Povratna poruka sa uređaja: {response}")
+        
         # Zatvaramo serijski port
         ser.close()
-        print(f"Poslat signal na {port}.")
+        print(f"Povratna poruka sa uređaja: {response}")
     except serial.SerialException as e:
         print(f"Error : otvaranje porta: {e}")
     except Exception as e:
